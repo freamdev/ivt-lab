@@ -26,7 +26,7 @@ public class GT4500Test {
 
     // Act
 
-    boolean result = ship.fireTorpedo(FiringMode.SINGLE);
+    ship.fireTorpedo(FiringMode.SINGLE);
 
     // Assert
 
@@ -40,7 +40,7 @@ public class GT4500Test {
     when(mockTorpedoStoreOne.fire(1)).thenReturn(true);
     when(mockTorpedoStoreTwo.fire(1)).thenReturn(true);
     // Act
-    boolean result = ship.fireTorpedo(FiringMode.ALL);
+    ship.fireTorpedo(FiringMode.ALL);
 
     // Assert
     verify(mockTorpedoStoreOne, times(1)).fire(1);
@@ -54,7 +54,7 @@ public class GT4500Test {
 
     // Act
 
-    boolean result = ship.fireTorpedo(FiringMode.SINGLE);
+    ship.fireTorpedo(FiringMode.SINGLE);
 
     // Assert
 
@@ -69,13 +69,62 @@ public class GT4500Test {
     when(mockTorpedoStoreTwo.fire(1)).thenReturn(false);
 
     // Act
-
-    boolean result = ship.fireTorpedo(FiringMode.SINGLE);
+    ship.fireTorpedo(FiringMode.SINGLE);
 
     // Assert
 
     verify(mockTorpedoStoreOne, times(0)).fire(1);
     verify(mockTorpedoStoreTwo, times(1)).fire(1);
+  }
+
+  @Test
+  public void fireTorpedo_OneError_TwoNotFired(){
+    // Arrange
+    when(mockTorpedoStoreOne.fire(1)).thenThrow(new RuntimeException());
+    when(mockTorpedoStoreTwo.fire(1)).thenReturn(false);
+
+    // Act
+
+    ship.fireTorpedo(FiringMode.SINGLE);
+    ship.fireTorpedo(FiringMode.SINGLE);
+
+    // Assert
+
+    verify(mockTorpedoStoreOne, times(1)).fire(1);
+    verify(mockTorpedoStoreTwo, times(0)).fire(1);
+  }
+
+  @Test
+  public void fireTorpedo_One_Two_One_Alternate(){
+    // Arrange
+    when(mockTorpedoStoreOne.fire(1)).thenReturn(true);
+    when(mockTorpedoStoreTwo.fire(1)).thenReturn(true);
+
+    // Act
+
+    ship.fireTorpedo(FiringMode.SINGLE);
+    ship.fireTorpedo(FiringMode.SINGLE);
+    ship.fireTorpedo(FiringMode.SINGLE);
+
+    // Assert
+
+    verify(mockTorpedoStoreOne, times(2)).fire(1);
+    verify(mockTorpedoStoreTwo, times(1)).fire(1);
+  }
+
+  @Test
+  public void fireTorpedo_All_Empty(){
+    // Arrange
+    when(mockTorpedoStoreOne.fire(1)).thenReturn(true);
+    when(mockTorpedoStoreTwo.fire(1)).thenReturn(true);
+    when(mockTorpedoStoreOne.isEmpty()).thenReturn(true);
+    when(mockTorpedoStoreTwo.isEmpty()).thenReturn(true);
+
+    // Act
+    ship.fireTorpedo(FiringMode.ALL);
+    // Assert
+    verify(mockTorpedoStoreOne, times(0)).fire(1);
+    verify(mockTorpedoStoreTwo, times(0)).fire(1);
   }
 
 }
