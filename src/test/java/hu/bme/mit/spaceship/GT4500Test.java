@@ -78,23 +78,6 @@ public class GT4500Test {
   }
 
   @Test
-  public void fireTorpedo_OneError_TwoNotFired(){
-    // Arrange
-    when(mockTorpedoStoreOne.fire(1)).thenThrow(new RuntimeException());
-    when(mockTorpedoStoreTwo.fire(1)).thenReturn(false);
-
-    // Act
-
-    ship.fireTorpedo(FiringMode.SINGLE);
-    ship.fireTorpedo(FiringMode.SINGLE);
-
-    // Assert
-
-    verify(mockTorpedoStoreOne, times(1)).fire(1);
-    verify(mockTorpedoStoreTwo, times(0)).fire(1);
-  }
-
-  @Test
   public void fireTorpedo_One_Two_One_Alternate(){
     // Arrange
     when(mockTorpedoStoreOne.fire(1)).thenReturn(true);
@@ -124,6 +107,23 @@ public class GT4500Test {
     ship.fireTorpedo(FiringMode.ALL);
     // Assert
     verify(mockTorpedoStoreOne, times(0)).fire(1);
+    verify(mockTorpedoStoreTwo, times(0)).fire(1);
+  }
+
+   @Test
+  public void fireTorpero_ThreeTimes_SecondEmpty(){
+       // Arrange
+    when(mockTorpedoStoreOne.fire(1)).thenReturn(true);
+    when(mockTorpedoStoreTwo.isEmpty()).thenReturn(true);
+    when(mockTorpedoStoreTwo.fire(1)).thenReturn(true);
+
+    // Act
+    ship.fireTorpedo(FiringMode.SINGLE);
+    ship.fireTorpedo(FiringMode.SINGLE);
+    ship.fireTorpedo(FiringMode.SINGLE);
+
+    // Assert
+    verify(mockTorpedoStoreOne, times(3)).fire(1);
     verify(mockTorpedoStoreTwo, times(0)).fire(1);
   }
 
